@@ -1,7 +1,7 @@
 # Личный проект «TaskForce»
 
 * Студент: [Юрий Шаховский](https://up.htmlacademy.ru/yii/2/user/172548).
-* Наставник: `Неизвестно`.
+* Наставник: [Александр Смиркин](https://htmlacademy.ru/profile/id1411277).
 
 ---
 
