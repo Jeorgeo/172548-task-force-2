@@ -1,4 +1,7 @@
-<?
+<?php
+
+use TaskForce\main\TaskMain;
+
 error_reporting(E_ALL);
 ?>
 <!DOCTYPE html>
@@ -8,8 +11,8 @@ error_reporting(E_ALL);
         <title></title>
     </head>
     <body>
-        <?
-         require_once($_SERVER['DOCUMENT_ROOT'] . '/class/task.php');
+        <?php
+         require_once($_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php');
 
          function debugResult($result) {
              echo '<pre>';
@@ -25,7 +28,7 @@ error_reporting(E_ALL);
                     Код '$code'<br /><hr />";
             }
 
-         $task = new Task( 1, 21, 'new');
+         $task = new TaskMain( 1, 21, 'new');
 
          if ($task->getStatusesMap()) {
               debugResult($task->getStatusesMap());
@@ -35,16 +38,16 @@ error_reporting(E_ALL);
          }
 
          $resultAction = $task->getActionsListByStatus( 'new' );
-         $resultStatus = $task->getNextStatusByAction('action_cancel');
+         $resultStatus = $task->getNextStatusByAction('cancel');
 
          assert_options(ASSERT_CALLBACK, 'myAssertHandler');
 
-         if (assert($resultStatus == Task::STATUS_CANCEL, 'cancel')) {
+         if (assert($resultStatus == TaskMain::STATUS_CANCELED, 'canceled')) {
              echo 'метод получения следующего статуса проверен!';
              echo '<br>';
          }
 
-         if ((assert($resultAction[1] == Task::ACTION_CANCEL, 'action_cancel'))&&(assert($resultAction[21] == Task::ACTION_RESPOND, 'action_respond'))) {
+         if ((assert($resultAction[1] == TaskMain::ACTION_CANCEL, 'cancel'))&&(assert($resultAction[21] == TaskMain::ACTION_RESPOND, 'respond'))) {
              echo 'метод получения доступных действий для статуса проверен!';
              echo '<br>';
          }
