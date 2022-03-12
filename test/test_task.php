@@ -1,6 +1,6 @@
 <?php
 
-use TaskForce\main\TaskMain;
+use TaskForce\Main\TaskMain;
 
 error_reporting(E_ALL);
 ?>

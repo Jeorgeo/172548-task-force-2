@@ -1,6 +1,6 @@
 <?php
 
-namespace TaskForce\main;
+namespace TaskForce\Main;
 
 /**
  * Класс для работы с сущностью «Задание»
