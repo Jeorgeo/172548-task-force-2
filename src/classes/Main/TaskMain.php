@@ -1,19 +1,20 @@
-<?
+<?php
+
+namespace TaskForce\Main;
 
 /**
-* Класс для работы с сущностью «Задание»
-*
-* Проект «TaskForce»
-*
-* Автор юрий Шаховский
-*/
-
-class Task
+ * Класс для работы с сущностью «Задание»
+ *
+ * Проект «TaskForce»
+ *
+ * Автор юрий Шаховский
+ */
+class TaskMain
 {
 
     /** @var string STATUS_NEW Задание опубликовано, исполнитель ещё не найден */
-    /** @var string STATUS_CANCEL Заказчик отменил задание */
-    /** @var string STATUS_APROVE Заказчик выбрал исполнителя для задания */
+    /** @var string STATUS_CANCELED Заказчик отменил задание */
+    /** @var string STATUS_APROVED Заказчик выбрал исполнителя для задания */
     /** @var string STATUS_DONE Заказчик отметил задание как выполненное */
     /** @var string STATUS_FAIL Исполнитель отказался от выполнения задания */
 
@@ -30,20 +31,20 @@ class Task
     /** @var int employeeID ID исполнителя */
 
     const STATUS_NEW = 'new';
-    const STATUS_CANCEL = 'cancel';
-    const STATUS_APROVE = 'aprove';
+    const STATUS_CANCELED = 'canceled';
+    const STATUS_APROVED = 'aproved';
     const STATUS_DONE = 'done';
     const STATUS_FAIL = 'fail';
 
-    const ACTION_CANCEL = 'action_cancel';
-    const ACTION_COMPLETE = 'action_complete';
-    const ACTION_RESPOND = 'action_respond';
-    const ACTION_REFUSE = 'action_refuse';
+    const ACTION_CANCEL = 'cancel';
+    const ACTION_COMPLETE = 'complete';
+    const ACTION_RESPOND = 'respond';
+    const ACTION_REFUSE = 'refuse';
 
     const TASK_STATUSES = [
         self::STATUS_NEW => 'Новое',
-        self::STATUS_CANCEL => 'Отменено',
-        self::STATUS_APROVE => 'В работе',
+        self::STATUS_CANCELED => 'Отменено',
+        self::STATUS_APROVED => 'В работе',
         self::STATUS_DONE => 'Выполнено',
         self::STATUS_FAIL => 'Провалено'
     ];
@@ -67,10 +68,10 @@ class Task
     }
 
     /**
-    * Получение «карты» статусов
-    *
-    * @return array
-    */
+     * Получение «карты» статусов
+     *
+     * @return array
+     */
 
     public function getStatusesMap()
     {
@@ -78,10 +79,10 @@ class Task
     }
 
     /**
-    * Получение «карты» действий
-    *
-    * @return array
-    */
+     * Получение «карты» действий
+     *
+     * @return array
+     */
 
     public function getActionsMap()
     {
@@ -89,21 +90,21 @@ class Task
     }
 
     /**
-    * Получение следующего статуса по "Заданию"
-    *
-    * @var string текущее действие в "Задании"
-    *
-    * @return string статус сущности
-    */
+     * Получение следующего статуса по "Заданию"
+     *
+     * @return string статус сущности
+     * @var string текущее действие в "Задании"
+     *
+     */
 
-    public function getNextStatusByAction( $currentTaskAction )
+    public function getNextStatusByAction($currentTaskAction)
     {
-        switch ( $currentTaskAction ) {
+        switch ($currentTaskAction) {
             case (self::ACTION_RESPOND):
-                return self::STATUS_APROVE;
+                return self::STATUS_APROVED;
                 break;
             case (self::ACTION_CANCEL):
-                return self::STATUS_CANCEL;
+                return self::STATUS_CANCELED;
                 break;
             case (self::ACTION_REFUSE):
                 return self::STATUS_FAIL;
@@ -115,33 +116,35 @@ class Task
     }
 
     /**
-    * Получение доступных действий для статуса по "Заданию"
-    *
-    * @var string текущий статус в "Заданию"
-    *
-    * @return array/bool список доступных действий
-    */
+     * Получение доступных действий для статуса по "Заданию"
+     *
+     * @return array/bool список доступных действий
+     * @var string текущий статус в "Заданию"
+     *
+     */
 
-    public function getActionsListByStatus( $currentTaskStatus )
+    public function getActionsListByStatus($currentTaskStatus)
     {
-        switch ( $currentTaskStatus ) {
+        switch ($currentTaskStatus) {
             case (self::STATUS_NEW):
                 return [
                     $this->customerID => self::ACTION_CANCEL,
                     $this->employeeID => self::ACTION_RESPOND
                 ];
                 break;
-            case (self::STATUS_APROVE):
+            case (self::STATUS_APROVED):
                 return [
                     $this->customerID => self::ACTION_COMPLETE,
                     $this->employeeID => self::ACTION_REFUSE
                 ];
                 break;
             default:
-                return  false;
+                return false;
                 break;
         }
     }
 
-};
+}
+
+;
 ?>
