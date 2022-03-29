@@ -1,5 +1,7 @@
 <?php
 
+use TaskForce\Main\ActionCancel;
+use TaskForce\Main\ActionRespond;
 use TaskForce\Main\TaskMain;
 
 error_reporting(E_ALL);
@@ -37,7 +39,8 @@ error_reporting(E_ALL);
               debugResult($task->getActionsMap());
          }
 
-         $resultAction = $task->getActionsListByStatus( 'new' );
+         $resultAction1 = $task->getActionsListByStatus( 'new', 1 )::getCode();
+         $resultAction21 = $task->getActionsListByStatus( 'new', 21 )::getCode();
          $resultStatus = $task->getNextStatusByAction('cancel');
 
          assert_options(ASSERT_CALLBACK, 'myAssertHandler');
@@ -47,10 +50,17 @@ error_reporting(E_ALL);
              echo '<br>';
          }
 
-         if ((assert($resultAction[1] == TaskMain::ACTION_CANCEL, 'cancel'))&&(assert($resultAction[21] == TaskMain::ACTION_RESPOND, 'respond'))) {
-             echo 'метод получения доступных действий для статуса проверен!';
+         if (assert($resultAction1 == ActionRespond::getCode(), 'respond')
+         ) {
+             echo 'метод получения доступных действий для статуса и пользователя ID=1 проверен!';
              echo '<br>';
          }
+
+        if (assert($resultAction21 == ActionCancel::getCode(), 'cancel')
+        ) {
+            echo 'метод получения доступных действий для статуса и пользователя ID=21 проверен!';
+            echo '<br>';
+        }
 
         ?>
     </body>
