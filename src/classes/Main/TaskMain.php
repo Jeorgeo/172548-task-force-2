@@ -7,7 +7,7 @@ namespace TaskForce\Main;
  *
  * Проект «TaskForce»
  *
- * Автор юрий Шаховский
+ * Автор Yury Shakhousky
  */
 class TaskMain
 {
@@ -36,10 +36,10 @@ class TaskMain
     const STATUS_DONE = 'done';
     const STATUS_FAIL = 'fail';
 
-    const ACTION_CANCEL = 'cancel';
-    const ACTION_COMPLETE = 'complete';
-    const ACTION_RESPOND = 'respond';
-    const ACTION_REFUSE = 'refuse';
+//    const ACTION_CANCEL = 'cancel';
+//    const ACTION_COMPLETE = 'complete';
+//    const ACTION_RESPOND = 'respond';
+//    const ACTION_REFUSE = 'refuse';
 
     const TASK_STATUSES = [
         self::STATUS_NEW => 'Новое',
@@ -49,16 +49,9 @@ class TaskMain
         self::STATUS_FAIL => 'Провалено'
     ];
 
-    const TASK_ACTIONS = [
-        self::ACTION_CANCEL => 'Отменить',
-        self::ACTION_COMPLETE => 'Завершить',
-        self::ACTION_RESPOND => 'Откликнуться',
-        self::ACTION_REFUSE => 'Отказаться'
-    ];
-
-    private $currentTaskStatus;
-    private $customerID;
-    private $employeeID;
+    private string $currentTaskStatus;
+    private int $customerID;
+    private int $employeeID;
 
     function __construct($customerID, $employeeID, $currentTaskStatus)
     {
@@ -73,7 +66,7 @@ class TaskMain
      * @return array
      */
 
-    public function getStatusesMap()
+    public function getStatusesMap():array
     {
         return self::TASK_STATUSES;
     }
@@ -84,64 +77,76 @@ class TaskMain
      * @return array
      */
 
-    public function getActionsMap()
+    public function getActionsMap():array
     {
-        return self::TASK_ACTIONS;
+        return [
+            ActionCancel::getCode() => ActionCancel::getName(),
+            ActionRespond::getCode() => ActionRespond::getName(),
+            ActionComplete::getCode() => ActionComplete::getName(),
+            ActionRefuse::getCode() => ActionRefuse::getName()
+        ];
     }
 
     /**
      * Получение следующего статуса по "Заданию"
      *
-     * @return string статус сущности
-     * @var string текущее действие в "Задании"
+     * @param string текущее действие в "Задании"
      *
+     * @return string статус сущности
      */
 
-    public function getNextStatusByAction($currentTaskAction)
+    public function getNextStatusByAction( $currentTaskAction ):string
     {
-        switch ($currentTaskAction) {
-            case (self::ACTION_RESPOND):
-                return self::STATUS_APROVED;
-                break;
-            case (self::ACTION_CANCEL):
-                return self::STATUS_CANCELED;
-                break;
-            case (self::ACTION_REFUSE):
-                return self::STATUS_FAIL;
-                break;
-            default:
-                return self::STATUS_DONE;
-                break;
-        }
+        return match ($currentTaskAction) {
+            ActionRespond::getCode() => self::STATUS_APROVED,
+            ActionCancel::getCode() => self::STATUS_CANCELED,
+            ActionRefuse::getCode() => self::STATUS_FAIL,
+            default => self::STATUS_DONE,
+        };
     }
 
     /**
      * Получение доступных действий для статуса по "Заданию"
+     * @param string текущий статус в "Заданию"
+     * @param integer текущий ID пользователя
      *
-     * @return array/bool список доступных действий
-     * @var string текущий статус в "Заданию"
-     *
+     * @return object/null список доступных действий
      */
 
-    public function getActionsListByStatus($currentTaskStatus)
+    public function getActionsListByStatus( $currentTaskStatus, $userID ):object
     {
+        $usersList = [
+            $this->employeeID,
+            $this->customerID,
+            $userID
+        ];
+
         switch ($currentTaskStatus) {
             case (self::STATUS_NEW):
-                return [
-                    $this->customerID => self::ACTION_CANCEL,
-                    $this->employeeID => self::ACTION_RESPOND
-                ];
+                if (ActionCancel::checkAccess( ...$usersList ))
+                {
+                    $action = new ActionCancel();
+                };
+                if (ActionRespond::checkAccess( ...$usersList ))
+                {
+                    $action = new ActionRespond();
+                };
                 break;
             case (self::STATUS_APROVED):
-                return [
-                    $this->customerID => self::ACTION_COMPLETE,
-                    $this->employeeID => self::ACTION_REFUSE
-                ];
+                if (ActionComplete::checkAccess( ...$usersList ))
+                {
+                    $action = new ActionComplete();
+                };
+                if (ActionRefuse::checkAccess( ...$usersList ))
+                {
+                    $action = new ActionRefuse();
+                };
                 break;
             default:
-                return false;
+                $action = null;
                 break;
         }
+        return $action;
     }
 
 }
